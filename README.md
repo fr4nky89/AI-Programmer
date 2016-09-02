@@ -4,7 +4,7 @@ AI-Programmer
 Read the full article at:
 http://www.primaryobjects.com/CMS/Article149
  
-Following awesome results provided by the initial source code I have decided to generalize Fitness function so now any function can be generated in BF. For example if you want to get source code for the add function simply do in Program.cs:
+Following awesome results provided by the initial source code I have decided to generalize Fitness function so now any function can be generated in BF. For example if you want to generate some BF code to add two bytes simply type in Program.cs:
 
 ```
 struct MyTuple {
@@ -16,6 +16,9 @@ private static IFitness GetFitnessMethod() {
     return new GenericFitness<MyTuple, byte>(t => (byte)(t.input1 + t.input2), _ga, 1000000);
 }
 ```
+
+The the size of input and output is virtually ilimited but be cautious, because execution time grow very fast.
+I have tested with code of differents length in the function body and this has a little influence over processing time.
 
 ## Motivation
 
