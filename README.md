@@ -13,7 +13,7 @@ struct MyTuple {
 }
 
 private static IFitness GetFitnessMethod() {
-    return new GenericFitness<MyTuple, byte>(t => (byte)(t.input1 + t.input2), _ga, 1000000);
+    return new GenericFitness<MyTuple, byte>(t => (byte)(t.input1 + t.input2), _ga, _maxIterationCount);
 }
 ```
 
