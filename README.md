@@ -4,7 +4,18 @@ AI-Programmer
 Read the full article at:
 http://www.primaryobjects.com/CMS/Article149
  
-AI-Programmer is an experiment with using artificial intelligence and genetic algorithms to automatically generate programs in the Brainf**k programming language. Successfully created [programs](https://github.com/primaryobjects/AI-Programmer/tree/master/Results) by the AI include: hello world, hello <name>, addition, subtraction, reversing a string, fibonnaci sequence, 99 bottles of beer on the wall, and more. It's getting smarter. In short, it's an AI genetic algorithm implementation with self modifying code.
+Following awesome results provided by the initial source code I have decided to generalize Fitness function so now any function can be generated in BF. For example if you want to get source code for the add function simply do in Program.cs:
+
+```
+struct MyTuple {
+    public byte input1;
+    public byte input2;
+}
+
+private static IFitness GetFitnessMethod() {
+    return new GenericFitness<MyTuple, byte>(t => (byte)(t.input1 + t.input2), _ga, 1000000);
+}
+```
 
 ## Motivation
 
@@ -124,6 +135,7 @@ return new AddFitness(_ga, _maxIterationCount);
 return new SubtractFitness(_ga, _maxIterationCount);
 return new ReverseStringFitness(_ga, _maxIterationCount);
 return new HelloUserFitness(_ga, _maxIterationCount, _targetString);
+return new GenericFitness<byte, byte>(i => (byte)i*2, _ga, _maxIterationCount);
 ```
 
 To use sub-routines, you'll need to enable functions. This will let the AI produce programs much faster. Uncomment the code for the functionGenerator, as follows:
