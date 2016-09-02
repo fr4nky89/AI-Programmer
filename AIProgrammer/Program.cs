@@ -14,8 +14,7 @@ using AIProgrammer.Managers;
 using AIProgrammer.Compiler;
 using AIProgrammer.Functions.Concrete;
 
-namespace AIProgrammer
-{
+namespace AIProgrammer {
     /// <summary>
     /// AIProgrammer experiment, using artificial intelligence to generate a program that solves a solution.
     /// This experiment uses a genetic algorithm to evolve a program in the programming language Brainfuck.
@@ -23,8 +22,7 @@ namespace AIProgrammer
     ///
     /// Created by Kory Becker 01-Jan-2013 http://www.primaryobjects.com/kory-becker
     /// </summary>
-    class Program
-    {
+    class Program {
         #region Private Variables
 
         private static GA _ga = null; // Our genetic algorithm instance.
@@ -62,9 +60,12 @@ namespace AIProgrammer
         ///   
         /// </summary>
         /// <returns>IFitness</returns>
-        private static IFitness GetFitnessMethod()
-        {
-            return new StringStrictFitness(_ga, _maxIterationCount, _targetParams.TargetString, _appendCode);
+        private static IFitness GetFitnessMethod() {
+            //Attention, les tableaux ne sont pas supportés dans les type.
+            Func<byte, byte> func = b => { return (byte)(b + 1 < byte.MaxValue ? b + 1 : 1); };
+            Func<byte, bool> func2 = b => { return b > 127; };
+            Func<byte, short> func3 = b => { return (short)(2 * b); };
+            return new GenericFitness<byte, byte>(func, _ga, _maxIterationCount);
         }
 
         #region Worker Methods
@@ -72,18 +73,15 @@ namespace AIProgrammer
         /// <summary>
         /// Event handler that is called upon each generation. We use this opportunity to display some status info and save the current genetic algorithm in case of crashes etc.
         /// </summary>
-        private static void OnGeneration(GA ga)
-        {
-            if (_bestStatus.Iteration++ > 1000)
-            {
+        private static void OnGeneration(GA ga) {
+            if (_bestStatus.Iteration++ > 1000) {
                 _bestStatus.Iteration = 0;
                 Console.WriteLine("Best Fitness: " + _bestStatus.TrueFitness + "/" + _targetParams.TargetFitness + " " + Math.Round(_bestStatus.TrueFitness / _targetParams.TargetFitness * 100, 2) + "%, Ticks: " + _bestStatus.Ticks + ", Running: " + Math.Round((DateTime.Now - _startTime).TotalMinutes) + "m, Size: " + _genomeSize + ", Best Output: " + _bestStatus.Output + ", Changed: " + _bestStatus.LastChangeDate.ToString() + ", Program: " + _bestStatus.Program);
-                
+
                 ga.Save("my-genetic-algorithm.dat");
             }
 
-            if (_expandAmount > 0 && ga.GAParams.CurrentGeneration > 0 && ga.GAParams.CurrentGeneration % _expandRate == 0 && _genomeSize < _maxGenomeSize)
-            {
+            if (_expandAmount > 0 && ga.GAParams.CurrentGeneration > 0 && ga.GAParams.CurrentGeneration % _expandRate == 0 && _genomeSize < _maxGenomeSize) {
                 _genomeSize += _expandAmount;
                 ga.GAParams.GenomeSize = _genomeSize;
 
@@ -96,8 +94,7 @@ namespace AIProgrammer
         /// </summary>
         /// <param name="weights">Array of double (genes), where each value cooresponds to a Brainfuck program command.</param>
         /// <returns>double, indicating the score</returns>
-        private static double fitnessFunction(double[] weights)
-        {
+        private static double fitnessFunction(double[] weights) {
             // Get the selected fitness type.
             IFitness myFitness = GetFitnessMethod();
 
@@ -105,8 +102,7 @@ namespace AIProgrammer
             double fitness = myFitness.GetFitness(weights);
 
             // Is this a new best fitness?
-            if (fitness > _bestStatus.Fitness)
-            {
+            if (fitness > _bestStatus.Fitness) {
                 _bestStatus.Fitness = fitness;
                 _bestStatus.TrueFitness = myFitness.Fitness;
                 _bestStatus.Output = myFitness.Output;
@@ -125,13 +121,11 @@ namespace AIProgrammer
         /// <summary>
         /// Main program.
         /// </summary>
-        static void Main(string[] args)
-        {
+        static void Main(string[] args) {
             // Genetic algorithm setup.
             _ga = new GA(_crossoverRate, _mutationRate, 100, 10000000, _genomeSize);
 
-            if (_functionGenerator != null)
-            {
+            if (_functionGenerator != null) {
                 // Generate additional functions.
                 _appendCode += _functionGenerator.Generate(_ga);
             }
@@ -146,8 +140,7 @@ namespace AIProgrammer
             string program = GAManager.Run(_ga, fitnessFunction, OnGeneration);
 
             // Append any functions.
-            if (!string.IsNullOrEmpty(_appendCode))
-            {
+            if (!string.IsNullOrEmpty(_appendCode)) {
                 program += "@" + _appendCode;
             }
 

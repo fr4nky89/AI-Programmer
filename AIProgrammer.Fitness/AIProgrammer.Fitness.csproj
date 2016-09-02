@@ -11,6 +11,8 @@
     <AssemblyName>AIProgrammer.Fitness</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -46,6 +48,7 @@
     <Compile Include="Base\FitnessBase.cs" />
     <Compile Include="Concrete\AddCleanFitness.cs" />
     <Compile Include="Concrete\AddFitness.cs" />
+    <Compile Include="Concrete\GenericFitness.cs" />
     <Compile Include="Concrete\LogicalXorFitness.cs" />
     <Compile Include="Concrete\LogicalOrFitness.cs" />
     <Compile Include="Concrete\LogicalAndFitness.cs" />
@@ -88,6 +91,9 @@
       <Project>{7bcc43b1-33a8-44c8-8f4d-752d89672180}</Project>
       <Name>AIProgrammer.Types</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="FodyWeavers.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

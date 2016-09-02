@@ -207,7 +207,6 @@ namespace AIProgrammer.GeneticAlgorithm
                 g.Fitness = FitnessFunction(g.Genes());
                 GAParams.TotalFitness += g.Fitness;
             });
-
             GAParams.ThisGeneration.Sort(delegate(Genome x, Genome y)  { return Comparer<double>.Default.Compare(x.Fitness, y.Fitness); });
 
             //  now sorted in order of fitness.
