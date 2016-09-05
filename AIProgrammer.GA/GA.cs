@@ -202,11 +202,14 @@ namespace AIProgrammer.GeneticAlgorithm
             GAParams.TotalFitness = 0.0;
 
             // Calculate fitness for each genome.
+            foreach (var g in GAParams.ThisGeneration) {
+                /*
+            }
             Parallel.ForEach(GAParams.ThisGeneration, (g) =>
-            {
+            {*/
                 g.Fitness = FitnessFunction(g.Genes());
                 GAParams.TotalFitness += g.Fitness;
-            });
+            }//);
             GAParams.ThisGeneration.Sort(delegate(Genome x, Genome y)  { return Comparer<double>.Default.Compare(x.Fitness, y.Fitness); });
 
             //  now sorted in order of fitness.

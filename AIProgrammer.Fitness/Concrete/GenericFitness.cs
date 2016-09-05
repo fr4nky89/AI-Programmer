@@ -4,6 +4,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
+using System.ComponentModel;
 using System.Text;
 
 namespace AIProgrammer.Fitness.Concrete {
@@ -22,7 +23,7 @@ namespace AIProgrammer.Fitness.Concrete {
         /// <summary>
         /// Initialize GenericFitness
         /// </summary>
-        /// <param name="func">function to generate in BrainFu</param>
+        /// <param name="func">function to generate in BF</param>
         /// <param name="ga">Genetic algorithm</param>
         /// <param name="maxIterationCount">Max iteration count</param>
         /// <param name="trainingRatio">Pourcentage of all possible inputs taken into acount
@@ -35,15 +36,32 @@ namespace AIProgrammer.Fitness.Concrete {
             : base(ga, maxIterationCount) {
             _func = func;
 
-            input_size = GetByteSizeFromStruct(Activator.CreateInstance(_func.GetType().GetGenericArguments()[0]));
-            output_size = GetByteSizeFromStruct(Activator.CreateInstance(_func.GetType().GetGenericArguments()[1]));
+            var type = _func.GetType();
 
+            var t = type.GetGenericArguments()[0];
+            var t_result = type.GetGenericArguments()[1];
+
+            if (!ValidStruct(t)) throw new ArgumentException("Func<T, TResult> : T is not a valid struct", "func");
+            if (!ValidStruct(t_result)) throw new ArgumentException("Func<T, TResult> : TResult is not a valid struct", "func");
+
+            input_size = Marshal.SizeOf(t);
+            output_size = Marshal.SizeOf(t_result);
 
             _trainingRatio = trainingRatio > 0 ? trainingRatio : 1;
+
+            if (Math.Pow(256, input_size) > long.MaxValue / _trainingRatio) throw new ArgumentException("sizeof(T) * trainingRatio > long.MaxSize");
+
             if (_targetFitness == 0) {
                 _targetFitness = 256 * 256 * input_size * _trainingRatio;
             }
         }
+
+        private static bool ValidStruct(Type t) {
+            return t.GetFields().All(
+                f => (!f.GetType().IsValueType && f.GetCustomAttributes(typeof(MarshalAsAttribute), true).Length == 1)
+                || (f.GetType().IsValueType && ValidStruct(f.GetType())));
+        }
+
 
         #region ByteArrayConverter
 
@@ -66,10 +84,6 @@ namespace AIProgrammer.Fitness.Concrete {
             Marshal.FreeHGlobal(i);
         }
 
-        private int GetByteSizeFromStruct(object obj) {
-            return StructureToByteArray(obj).Length;
-        }
-
         #endregion
 
         #region FitnessBase Members
@@ -81,10 +95,10 @@ namespace AIProgrammer.Fitness.Concrete {
                 int state_output = 0;
                 double countBonus = 0.0;
 
-                var possibilities = (long)((long)Math.Pow(256, input_size) * _trainingRatio);
+                var possibilities = (long)(Math.Pow((double)256, (double)input_size) * _trainingRatio);
 
 
-                int cut_array_step = (int)(int.MaxValue / 8);
+                int cut_array_step = (int)(int.MaxValue / 30);
                 var sub_div = Math.Max((int)(possibilities / cut_array_step), 1);
                 var sub_div_lenght = (long)Math.Ceiling((double)(possibilities / sub_div));
 

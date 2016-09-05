@@ -13,8 +13,10 @@ using AIProgrammer.Fitness.Concrete.Research;
 using AIProgrammer.Managers;
 using AIProgrammer.Compiler;
 using AIProgrammer.Functions.Concrete;
+using System.Runtime.InteropServices;
 
 namespace AIProgrammer {
+
     /// <summary>
     /// AIProgrammer experiment, using artificial intelligence to generate a program that solves a solution.
     /// This experiment uses a genetic algorithm to evolve a program in the programming language Brainfuck.
@@ -61,11 +63,16 @@ namespace AIProgrammer {
         /// </summary>
         /// <returns>IFitness</returns>
         private static IFitness GetFitnessMethod() {
-            //Attention, les tableaux ne sont pas supportés dans les type.
             Func<byte, byte> func = b => { return (byte)(b + 1 < byte.MaxValue ? b + 1 : 1); };
             Func<byte, bool> func2 = b => { return b > 127; };
             Func<byte, short> func3 = b => { return (short)(2 * b); };
-            return new GenericFitness<byte, byte>(func, _ga, _maxIterationCount);
+            Func<someStruct, someStruct> func4 = s => { s.a = s.a.Reverse().ToString(); return s; };
+            return new GenericFitness<someStruct, someStruct>(func4, _ga, _maxIterationCount, 0.00001);
+        }
+
+        struct someStruct {
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 6)]
+            public string a;
         }
 
         #region Worker Methods
